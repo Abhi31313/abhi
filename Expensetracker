@@ -1,0 +1,77 @@
+///htmlcode
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        <form id="expenseForm">
+            <input type="text" id="expenseText" placeholder="Enter expense description">
+            <input type="number" id="expenseAmount" placeholder="Enter amount">
+            <button type="submit">Add Expense</button>
+        </form>
+        <ul id="expenseList"></ul>
+        <p>Total Expenses: <span id="totalExpense">0</span></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+....//jscode//
+
+// Retrieve expenses from local storage or initialize if empty
+let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+// Function to render expenses
+function renderExpenses() {
+    const expenseList = document.getElementById('expenseList');
+    const totalExpense = document.getElementById('totalExpense');
+    
+    // Clear previous list
+    expenseList.innerHTML = '';
+    
+    // Initialize total
+    let total = 0;
+    
+    // Render expenses
+    expenses.forEach(expense => {
+        const li = document.createElement('li');
+        li.textContent = `${expense.text}: $${expense.amount}`;
+        expenseList.appendChild(li);
+        total += parseFloat(expense.amount);
+    });
+    
+    // Update total
+    totalExpense.textContent = total.toFixed(2);
+}
+
+// Add expense
+function addExpense(text, amount) {
+    expenses.push({ text, amount });
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+    renderExpenses();
+}
+
+// Event listener for form submission
+document.getElementById('expenseForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const text = document.getElementById('expenseText').value;
+    const amount = document.getElementById('expenseAmount').value;
+    if (text.trim() !== '' && amount.trim() !== '') {
+        addExpense(text, amount);
+        document.getElementById('expenseText').value = '';
+        document.getElementById('expenseAmount').value = '';
+    } else {
+        alert('Please enter both description and amount.');
+    }
+});
+
+// Initial render
+renderExpenses();
